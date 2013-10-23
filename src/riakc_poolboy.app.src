@@ -1,0 +1,28 @@
+%%% -*- mode: erlang -*-
+{application, riakc_poolboy,
+ [
+  {description, "Simple Riak PB connection pool"},
+  {vsn, "1.0.0"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  riakc,
+                  poolboy
+                 ]},
+  {mod, { riakc_poolboy_app, []}},
+  {env, [
+         {pools, [
+                  {riak_pool,
+                   [
+                    {size, 10},
+                    {max_overflow, 20}
+                   ],
+                   [
+                    {hostname, "127.0.0.1"},
+                    {port, 8087},
+                    {options, [{auto_reconnect, true}]}
+                   ]}
+                 ]}
+        ]}
+ ]}.
