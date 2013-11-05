@@ -75,9 +75,11 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal Functions
 %%%===================================================================
 
+-spec ensure_connected(pid()) -> boolean().
 ensure_connected(Conn) ->
     ensure_connected(Conn, 10, 450).
 
+-spec ensure_connected(pid(), non_neg_integer(), non_neg_integer()) -> boolean().
 ensure_connected(_Conn, 0, _Delay) ->
     lager:error("Could not ensure connection was established!"),
     false;
@@ -85,11 +87,12 @@ ensure_connected(Conn, Retry, Delay) ->
     case riakc_pb_socket:is_connected(Conn) of
         true ->
             true;
-        false ->
+        {false, _} ->
             ok = timer:sleep(Delay),
             ensure_connected(Conn, Retry - 1, Delay)
     end.
 
+-spec has_auto_reconnect(list()) -> boolean().
 has_auto_reconnect(Options) ->
     lists:member(auto_reconnect, Options) orelse
         lists:member({auto_reconnect, true}, Options).
