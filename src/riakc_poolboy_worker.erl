@@ -28,6 +28,12 @@ init(Args) ->
     Port = proplists:get_value(port, Args, 8087),
     Options = proplists:get_value(options, Args, []),
     {ok, Conn} = riakc_pb_socket:start_link(Hostname, Port, Options),
+    case has_auto_reconnect(Options) of
+        true ->
+            true = ensure_connected(Conn);
+        false ->
+            ok
+    end,
     {ok, #state{conn=Conn}}.
 
 handle_call({F, A1, A2, A3, A4, A5, A6}, _From, State=#state{conn=Conn}) ->
@@ -64,3 +70,26 @@ terminate(_Reason, #state{conn=Conn}) ->
 
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
+
+%%%===================================================================
+%%% Internal Functions
+%%%===================================================================
+
+ensure_connected(Conn) ->
+    ensure_connected(Conn, 10, 450).
+
+ensure_connected(_Conn, 0, _Delay) ->
+    lager:error("Could not ensure connection was established!"),
+    false;
+ensure_connected(Conn, Retry, Delay) ->
+    case riakc_pb_socket:is_connected(Conn) of
+        true ->
+            true;
+        false ->
+            ok = timer:sleep(Delay),
+            ensure_connected(Conn, Retry - 1, Delay)
+    end.
+
+has_auto_reconnect(Options) ->
+    lists:member(auto_reconnect, Options) orelse
+        lists:member({auto_reconnect, true}, Options).
