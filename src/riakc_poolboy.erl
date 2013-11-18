@@ -2,7 +2,8 @@
 
 -include_lib("riakc/include/riakc.hrl").
 
--export([get_server_info/1, get_server_info/2,
+-export([start_pool/3,
+         get_server_info/1, get_server_info/2,
          get/3, get/4, get/5,
          put/2, put/3, put/4,
          delete/3, delete/4, delete/5,
@@ -17,6 +18,10 @@
          search/3, search/4, search/5, search/6,
          get_index/4, get_index/5, get_index/6, get_index/7,
          tunnel/4]).
+
+-spec start_pool(atom(), list(term()), list(term())) -> supervisor:startlink_ret().
+start_pool(Name, SizeArgs, WorkerArgs) ->
+    riakc_poolboy_sup:start_link(Name, SizeArgs, WorkerArgs).
 
 -type msg_id() :: non_neg_integer(). %% Request identifier for tunneled message types
 
