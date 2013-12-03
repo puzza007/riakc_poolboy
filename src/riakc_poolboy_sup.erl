@@ -11,17 +11,16 @@
 start_link() ->
     supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
-start_pool(Name, SizeArgs, WorkerArgs) ->
+-spec start_pool(atom(), proplists:proplist(), proplists:proplist()) -> {ok, pid()}.
+start_pool(Name, SizeArgs, WorkerArgs) when is_atom(Name) ->
     PoolArgs =
         [{name, {local, Name}},
          {worker_module, riakc_poolboy_worker}] ++ SizeArgs,
-    PoolSpec = poolboy:child_spec(Name, PoolArgs, WorkerArgs),
-    supervisor:start_child(?MODULE, PoolSpec).
+    poolboy:start(PoolArgs, WorkerArgs).
 
--spec stop_pool(atom()) -> ok | {error, running | restarting | not_found | simple_one_for_one}.
+-spec stop_pool(atom()) -> ok.
 stop_pool(Name) ->
-    ok = supervisor:terminate_child(?MODULE, Name),
-    supervisor:delete_child(?MODULE, Name).
+    poolboy:stop(Name).
 
 init([]) ->
     {ok, Pools} = application:get_env(riakc_poolboy, pools),
