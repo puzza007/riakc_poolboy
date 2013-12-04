@@ -18,4 +18,8 @@ test:
 	rebar skip_deps=true ct
 
 dialyzer: compile
-	@dialyzer -Wno_undefined_callbacks -r ebin
+	@dialyzer -Wno_undefined_callbacks \
+        -r ebin \
+        -r deps/folsom \
+        -r deps/poolboy \
+        -r deps/riakc
