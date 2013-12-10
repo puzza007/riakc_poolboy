@@ -1,5 +1,7 @@
 # Riak Protocol Buffers Client Pool
 
+[![Build Status][travis_ci_image]][travis_ci]
+
 About
 =========
 
@@ -18,7 +20,7 @@ PoolName = badger_pool,
 riakc_poolboy:start_pool(PoolName, SizeArgs, WorkerArgs),
 
 
-riakc_poolboy:stop_pool (PoolName).
+riakc_poolboy:stop_pool(PoolName).
 ```
 
 TODO
@@ -26,3 +28,6 @@ TODO
 
 * Support streaming functions
 * Tests
+
+[travis_ci]: https://travis-ci.org/puzza007/riakc_poolboy
+[travis_ci_image]: https://travis-ci.org/puzza007/riakc_poolboy.png
