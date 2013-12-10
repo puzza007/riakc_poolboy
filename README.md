@@ -19,6 +19,7 @@ WorkerArgs = [{hostname, "127.0.0.1"},
 PoolName = badger_pool,
 riakc_poolboy:start_pool(PoolName, SizeArgs, WorkerArgs),
 
+{ok, Obj} = riakc_poolboy:get(PoolName, <<"a_bucket">>, <<"a_key">>).
 
 riakc_poolboy:stop_pool(PoolName).
 ```
