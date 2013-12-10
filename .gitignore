@@ -1,3 +1,5 @@
 ebin/*.app
 ebin/*.beam
 deps
+test/*.beam
+logs

@@ -1,4 +1,4 @@
-.PHONY: deps doc
+.PHONY: deps test doc
 
 all: deps compile
 
