@@ -15,6 +15,7 @@ SizeArgs = [{size, 10},
             {max_overflow, 20}],
 WorkerArgs = [{hostname, "127.0.0.1"},
               {port, 8087},
+              {ping_every, 50000}, %% undefined or absent to disable
               {options, [{auto_reconnect, true}]}],
 PoolName = badger_pool,
 riakc_poolboy:start_pool(PoolName, SizeArgs, WorkerArgs),

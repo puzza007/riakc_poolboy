@@ -10,7 +10,8 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
--record(state, {conn :: pid()}).
+-record(state, {conn :: pid(),
+                ping_every :: undefined | pos_integer()}).
 
 %%%===================================================================
 %%% API
@@ -26,6 +27,7 @@ start_link(Args) ->
 init(Args) ->
     Hostname = proplists:get_value(hostname, Args, "127.0.0.1"),
     Port = proplists:get_value(port, Args, 8087),
+    PingEvery = proplists:get_value(ping_every, Args, undefined),
     Options = proplists:get_value(options, Args, []),
     {ok, Conn} = riakc_pb_socket:start_link(Hostname, Port, Options),
     case has_auto_reconnect(Options) of
@@ -34,35 +36,47 @@ init(Args) ->
         false ->
             ok
     end,
-    {ok, #state{conn=Conn}}.
+    State = #state{conn=Conn, ping_every=PingEvery},
+    case PingEvery of
+        undefined ->
+            {ok, State};
+        PingEvery when is_integer(PingEvery) ->
+            {ok, State, PingEvery}
+    end.
 
 handle_call({F, A1, A2, A3, A4, A5, A6}, _From, State=#state{conn=Conn}) ->
     Reply = riakc_pb_socket:F(Conn, A1, A2, A3, A4, A5, A6),
-    {reply, Reply, State};
+    handle_call_reply(Reply, State);
 handle_call({F, A1, A2, A3, A4, A5}, _From, State=#state{conn=Conn}) ->
     Reply = riakc_pb_socket:F(Conn, A1, A2, A3, A4, A5),
-    {reply, Reply, State};
+    handle_call_reply(Reply, State);
 handle_call({F, A1, A2, A3, A4}, _From, State=#state{conn=Conn}) ->
     Reply = riakc_pb_socket:F(Conn, A1, A2, A3, A4),
-    {reply, Reply, State};
+    handle_call_reply(Reply, State);
 handle_call({F, A1, A2, A3}, _From, State=#state{conn=Conn}) ->
     Reply = riakc_pb_socket:F(Conn, A1, A2, A3),
-    {reply, Reply, State};
+    handle_call_reply(Reply, State);
 handle_call({F, A1, A2}, _From, State=#state{conn=Conn}) ->
     Reply = riakc_pb_socket:F(Conn, A1, A2),
-    {reply, Reply, State};
+    handle_call_reply(Reply, State);
 handle_call({F, A1}, _From, State=#state{conn=Conn}) ->
     Reply = riakc_pb_socket:F(Conn, A1),
-    {reply, Reply, State};
+    handle_call_reply(Reply, State);
 handle_call(F, _From, State=#state{conn=Conn}) ->
     Reply = riakc_pb_socket:F(Conn),
-    {reply, Reply, State}.
+    handle_call_reply(Reply, State).
 
 handle_cast(_Msg, State) ->
     {stop, unhandled_cast, State}.
 
-handle_info(_Info, State) ->
-    {stop, unhandled_info, State}.
+handle_info(timeout, State=#state{conn=Conn, ping_every=PingEvery})
+  when is_integer(PingEvery) ->
+    try
+        pong = riakc_pb_socket:ping(Conn),
+        {noreply, State, PingEvery}
+    catch _:_ ->
+            {stop, ping_failed, State}
+    end.
 
 terminate(_Reason, #state{conn=Conn}) ->
     ok = riakc_pb_socket:stop(Conn),
@@ -96,3 +110,9 @@ ensure_connected(Conn, Retry, Delay) ->
 has_auto_reconnect(Options) ->
     lists:member(auto_reconnect, Options) orelse
         lists:member({auto_reconnect, true}, Options).
+
+handle_call_reply(Reply, State=#state{ping_every=undefined}) ->
+    {reply, Reply, State};
+handle_call_reply(Reply, State=#state{ping_every=PingEvery})
+  when is_integer(PingEvery) ->
+    {reply, Reply, State, PingEvery}.
