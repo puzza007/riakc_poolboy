@@ -91,7 +91,10 @@ code_change(_OldVsn, State, _Extra) ->
 
 -spec ensure_connected(pid()) -> boolean().
 ensure_connected(Conn) ->
-    ensure_connected(Conn, 10, 450).
+    {ok, App} = application:get_application(),
+    Retries = application:get_env(App, reconnect_retries, 10),
+    Delay   = application:get_env(App, reconnect_delay  , 450),
+    ensure_connected(Conn, Retries, Delay).
 
 -spec ensure_connected(pid(), non_neg_integer(), non_neg_integer()) -> boolean().
 ensure_connected(_Conn, 0, _Delay) ->

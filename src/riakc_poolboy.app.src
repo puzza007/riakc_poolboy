@@ -25,6 +25,8 @@
                     {ping_every, undefined},
                     {options, [{auto_reconnect, true}]}
                    ]}
-                 ]}
+                 ]},
+         {reconnect_retries, 10},
+         {reconnect_delay, 450}
         ]}
  ]}.
