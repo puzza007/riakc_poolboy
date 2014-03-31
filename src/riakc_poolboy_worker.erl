@@ -91,9 +91,8 @@ code_change(_OldVsn, State, _Extra) ->
 
 -spec ensure_connected(pid()) -> boolean().
 ensure_connected(Conn) ->
-    {ok, App} = application:get_application(),
-    Retries = application:get_env(App, reconnect_retries, 10),
-    Delay   = application:get_env(App, reconnect_delay  , 450),
+    Retries = get_env(reconnect_retries, 10),
+    Delay   = get_env(reconnect_delay  , 450),
     ensure_connected(Conn, Retries, Delay).
 
 -spec ensure_connected(pid(), non_neg_integer(), non_neg_integer()) -> boolean().
@@ -119,3 +118,11 @@ handle_call_reply(Reply, State=#state{ping_every=undefined}) ->
 handle_call_reply(Reply, State=#state{ping_every=PingEvery})
   when is_integer(PingEvery) ->
     {reply, Reply, State, PingEvery}.
+
+get_env(Parameter, Default) ->
+    case application:get_env(Parameter) of
+        {ok, Value} ->
+            Value;
+        undefined ->
+            Default
+    end.
