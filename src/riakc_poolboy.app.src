@@ -2,7 +2,7 @@
 {application, riakc_poolboy,
  [
   {description, "Simple Riak PB connection pool"},
-  {vsn, "1.2.1"},
+  {vsn, "1.2.2"},
   {registered, []},
   {applications, [
                   kernel,
