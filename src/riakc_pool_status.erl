@@ -35,9 +35,15 @@ handle_cast(_Msg, State) ->
     {stop, unhandled_cast, State}.
 
 handle_info({status, Ref}, State = #state{name=Name, num_workers=NumWorkers, ref=Ref, folsom_gauge=GaugeName}) ->
-    {_StatusName, WorkerQueueLen, _Overflow, _MonitorsSize} = poolboy:status(Name),
-    PercentUsed = 100 * (NumWorkers - WorkerQueueLen) / WorkerQueueLen,
-    ok = folsom_metrics:notify({GaugeName, PercentUsed}),
+    {_StatusName, _WorkerQueueLen, Overflow, MonitorsSize} = poolboy:status(Name),
+    Used = Overflow + MonitorsSize,
+    case NumWorkers of
+        0 ->
+            ok;
+        _ ->
+            PercentUsed = 100 * (Used / NumWorkers),
+            ok = folsom_metrics:notify({GaugeName, PercentUsed})
+    end,
     {noreply, State}.
 
 terminate(_Reason, #state{timer=Tref, folsom_gauge=GaugeName}) ->
