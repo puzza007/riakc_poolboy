@@ -8,7 +8,7 @@
          terminate/2, code_change/3]).
 
 -record(state, {name :: atom(),
-                num_workers :: pos_integer(),
+                num_workers :: non_neg_integer(),
                 ref :: reference(),
                 timer :: timer:tref(),
                 folsom_gauge :: binary()}).
