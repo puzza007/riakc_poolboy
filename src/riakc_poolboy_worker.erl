@@ -3,26 +3,16 @@
 -behaviour(gen_server).
 -behaviour(poolboy_worker).
 
-%% API
 -export([start_link/1]).
 
-%% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
 -record(state, {conn :: pid(),
                 ping_every :: undefined | pos_integer()}).
 
-%%%===================================================================
-%%% API
-%%%===================================================================
-
 start_link(Args) ->
     gen_server:start_link(?MODULE, Args, []).
-
-%%%===================================================================
-%%% gen_server callbacks
-%%%===================================================================
 
 init(Args) ->
     Hostname = proplists:get_value(hostname, Args, "127.0.0.1"),
@@ -79,15 +69,10 @@ handle_info(timeout, State=#state{conn=Conn, ping_every=PingEvery})
     end.
 
 terminate(_Reason, #state{conn=Conn}) ->
-    ok = riakc_pb_socket:stop(Conn),
-    ok.
+    ok = riakc_pb_socket:stop(Conn).
 
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
-
-%%%===================================================================
-%%% Internal Functions
-%%%===================================================================
 
 -spec ensure_connected(pid()) -> boolean().
 ensure_connected(Conn) ->
