@@ -2,7 +2,7 @@
 {application, riakc_poolboy,
  [
   {description, "Simple Riak PB connection pool"},
-  {vsn, "1.2.4"},
+  {vsn, "1.3.0"},
   {registered, []},
   {applications, [
                   kernel,
@@ -23,6 +23,7 @@
                     {hostname, "127.0.0.1"},
                     {port, 8087},
                     {ping_every, undefined},
+                    {sync_connect, false},
                     {options, [{auto_reconnect, true}]}
                    ]}
                  ]},
