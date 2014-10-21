@@ -24,6 +24,8 @@ pool(_Config) ->
                 {max_overflow, 20}],
     WorkerArgs = [{hostname, "127.0.0.1"},
                   {port, 8087},
+                  {ping_every, 50000},
+                  {sync_connect, true},
                   {options, [{auto_reconnect, true}]}],
     PoolName = badger_pool,
     {ok, Pid} = riakc_poolboy:start_pool(PoolName, SizeArgs, WorkerArgs),

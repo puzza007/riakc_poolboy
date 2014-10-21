@@ -20,9 +20,14 @@ init(Args) ->
     PingEvery = proplists:get_value(ping_every, Args, undefined),
     Options = proplists:get_value(options, Args, []),
     {ok, Conn} = riakc_pb_socket:start_link(Hostname, Port, Options),
-    case has_auto_reconnect(Options) of
+    case proplists:get_value(sync_connect, Args, false) of
         true ->
-            true = ensure_connected(Conn);
+            case proplists:get_value(auto_reconnect, Options, false) of
+                true ->
+                    true = ensure_connected(Conn);
+                false ->
+                    ok
+            end;
         false ->
             ok
     end,
@@ -92,11 +97,6 @@ ensure_connected(Conn, Retry, Delay) ->
             ok = timer:sleep(Delay),
             ensure_connected(Conn, Retry - 1, Delay)
     end.
-
--spec has_auto_reconnect(list()) -> boolean().
-has_auto_reconnect(Options) ->
-    lists:member(auto_reconnect, Options) orelse
-        lists:member({auto_reconnect, true}, Options).
 
 handle_call_reply(Reply, State=#state{ping_every=undefined}) ->
     {reply, Reply, State};

@@ -16,6 +16,7 @@ SizeArgs = [{size, 10},
 WorkerArgs = [{hostname, "127.0.0.1"},
               {port, 8087},
               {ping_every, 50000}, %% undefined or absent to disable
+              {sync_connect, true}, %% useful for testing - workers must be connected to be available
               {options, [{auto_reconnect, true}]}],
 PoolName = badger_pool,
 riakc_poolboy:start_pool(PoolName, SizeArgs, WorkerArgs),
