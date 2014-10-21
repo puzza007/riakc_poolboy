@@ -20,23 +20,29 @@ init(Args) ->
     PingEvery = proplists:get_value(ping_every, Args, undefined),
     Options = proplists:get_value(options, Args, []),
     {ok, Conn} = riakc_pb_socket:start_link(Hostname, Port, Options),
-    case proplists:get_value(sync_connect, Args, false) of
-        true ->
-            case proplists:get_value(auto_reconnect, Options, false) of
-                true ->
-                    true = ensure_connected(Conn);
-                false ->
-                    ok
+    ConnectRes =
+        case proplists:get_value(sync_connect, Args, false) of
+            true ->
+                case proplists:get_value(auto_reconnect, Options, false) of
+                    true ->
+                        ensure_connected(Conn);
+                    false ->
+                        ok
+                end;
+            false ->
+                ok
+        end,
+    case ConnectRes of
+        ok ->
+            State = #state{conn=Conn, ping_every=PingEvery},
+            case PingEvery of
+                undefined ->
+                    {ok, State};
+                PingEvery when is_integer(PingEvery) ->
+                    {ok, State, PingEvery}
             end;
-        false ->
-            ok
-    end,
-    State = #state{conn=Conn, ping_every=PingEvery},
-    case PingEvery of
-        undefined ->
-            {ok, State};
-        PingEvery when is_integer(PingEvery) ->
-            {ok, State, PingEvery}
+        error ->
+            {stop, sync_connect_failed}
     end.
 
 handle_call({F, A1, A2, A3, A4, A5, A6}, _From, State=#state{conn=Conn}) ->
@@ -79,20 +85,20 @@ terminate(_Reason, #state{conn=Conn}) ->
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
--spec ensure_connected(pid()) -> boolean().
+-spec ensure_connected(pid()) -> ok | error.
 ensure_connected(Conn) ->
     Retries = get_env(reconnect_retries, 10),
     Delay   = get_env(reconnect_delay  , 450),
     ensure_connected(Conn, Retries, Delay).
 
--spec ensure_connected(pid(), non_neg_integer(), non_neg_integer()) -> boolean().
+-spec ensure_connected(pid(), non_neg_integer(), non_neg_integer()) -> ok | error.
 ensure_connected(_Conn, 0, _Delay) ->
     lager:error("Could not ensure connection was established!"),
-    false;
+    error;
 ensure_connected(Conn, Retry, Delay) ->
     case riakc_pb_socket:is_connected(Conn) of
         true ->
-            true;
+            ok;
         {false, _} ->
             ok = timer:sleep(Delay),
             ensure_connected(Conn, Retry - 1, Delay)
