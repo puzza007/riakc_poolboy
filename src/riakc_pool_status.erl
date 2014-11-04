@@ -8,7 +8,6 @@
          terminate/2, code_change/3]).
 
 -record(state, {name :: atom(),
-                num_workers :: non_neg_integer(),
                 ref :: reference(),
                 timer :: timer:tref()}).
 
@@ -22,8 +21,6 @@ start_link(Name) when is_atom(Name) ->
     gen_server:start_link(?MODULE, [Name], []).
 
 init([Name]) when is_atom(Name) ->
-    WorkerList = gen_server:call(Name, get_all_workers),
-    NumWorkers = length(WorkerList),
     Ref = make_ref(),
     [begin
          MetricName = metric_name(Name, StatName),
@@ -31,7 +28,7 @@ init([Name]) when is_atom(Name) ->
      end || {F, StatName} <- ?STAT_NAMES],
     {ok, Tref} = timer:send_interval(1000, self(), {status, Ref}),
     process_flag(trap_exit, true),
-    {ok, #state{name=Name, num_workers=NumWorkers, ref=Ref, timer=Tref}}.
+    {ok, #state{name=Name, ref=Ref, timer=Tref}}.
 
 handle_call(_Msg, _From, State) ->
     {stop, unhandled_call, State}.
