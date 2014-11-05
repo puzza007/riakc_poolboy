@@ -54,9 +54,9 @@ handle_info({status, Ref}, State = #state{name=Name, ref=Ref}) ->
 
 terminate(_Reason, #state{name=Name, timer=Tref}) ->
     [begin
-         GaugeName = metric_name(Name, StatName),
-         folsom_metrics:delete_metric(GaugeName)
-     end || StatName <- ?STAT_NAMES],
+         MetricName = metric_name(Name, StatName),
+         folsom_metrics:delete_metric(MetricName)
+     end || {_, StatName} <- ?STAT_NAMES],
     {ok, cancel} = timer:cancel(Tref),
     ok.
 
