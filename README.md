@@ -1,7 +1,5 @@
 # Riak Protocol Buffers Client Pool
 
-[![Build Status][travis_ci_image]][travis_ci]
-
 About
 =========
 
@@ -31,6 +29,3 @@ TODO
 
 * Support streaming functions
 * Tests
-
-[travis_ci]: https://travis-ci.org/puzza007/riakc_poolboy
-[travis_ci_image]: https://travis-ci.org/puzza007/riakc_poolboy.png
