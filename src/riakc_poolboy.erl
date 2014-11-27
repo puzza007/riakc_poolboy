@@ -2,22 +2,52 @@
 
 -include_lib("riakc/include/riakc.hrl").
 
--export([start_pool/3, stop_pool/1,
-         get_server_info/1, get_server_info/2,
-         get/3, get/4, get/5,
-         put/2, put/3, put/4,
-         delete/3, delete/4, delete/5,
-         delete_vclock/4, delete_vclock/5, delete_vclock/6,
-         delete_obj/2, delete_obj/3, delete_obj/4,
-         list_buckets/1, list_buckets/2, list_buckets/3,
-         list_keys/2, list_keys/3,
-         get_bucket/2, get_bucket/3, get_bucket/4,
-         set_bucket/3, set_bucket/4, set_bucket/5,
-         mapred/3, mapred/4, mapred/5,
-         mapred_bucket/3, mapred_bucket/4, mapred_bucket/5,
-         search/3, search/4, search/5, search/6,
-         get_index/4, get_index/5, get_index/6, get_index/7,
-         tunnel/4]).
+-export([delete/3]).
+-export([delete/4]).
+-export([delete/5]).
+-export([delete_obj/2]).
+-export([delete_obj/3]).
+-export([delete_obj/4]).
+-export([delete_vclock/4]).
+-export([delete_vclock/5]).
+-export([delete_vclock/6]).
+-export([get/3]).
+-export([get/4]).
+-export([get/5]).
+-export([get_bucket/2]).
+-export([get_bucket/3]).
+-export([get_bucket/4]).
+-export([get_index/4]).
+-export([get_index/5]).
+-export([get_index/6]).
+-export([get_index/7]).
+-export([get_server_info/1]).
+-export([get_server_info/2]).
+-export([list_buckets/1]).
+-export([list_buckets/2]).
+-export([list_buckets/3]).
+-export([list_keys/2]).
+-export([list_keys/3]).
+-export([mapred/3]).
+-export([mapred/4]).
+-export([mapred/5]).
+-export([mapred_bucket/3]).
+-export([mapred_bucket/4]).
+-export([mapred_bucket/5]).
+-export([put/2]).
+-export([put/3]).
+-export([put/4]).
+-export([search/3]).
+-export([search/4]).
+-export([search/5]).
+-export([search/6]).
+-export([set_bucket/3]).
+-export([set_bucket/4]).
+-export([set_bucket/5]).
+-export([start_pool/3]).
+-export([stop_pool/1]).
+-export([tunnel/4]).
+
 
 -spec start_pool(atom(), list(term()), list(term())) -> supervisor:startlink_ret().
 start_pool(Name, SizeArgs, WorkerArgs) ->
