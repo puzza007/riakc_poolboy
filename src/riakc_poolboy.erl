@@ -2,6 +2,8 @@
 
 -include_lib("riakc/include/riakc.hrl").
 
+-export([counter_incr/4]).
+-export([counter_val/3]).
 -export([delete/3]).
 -export([delete/4]).
 -export([delete/5]).
@@ -96,10 +98,18 @@ put(PoolName, Obj, Timeout) ->
 put(PoolName, Obj, Options, Timeout) ->
     exec(PoolName, {put, Obj, Options, Timeout}).
 
+-spec counter_incr(atom(), bucket(), key(), number()) -> ok | {error, term()}.
+counter_incr(PoolName, Bucket, Key, N) ->
+    exec(PoolName, {counter_incr, Bucket, Key, N}).
+
+-spec counter_val(atom(), bucket(), key()) -> ok | {error, term()}.
+counter_val(PoolName, Bucket, Key) ->
+    exec(PoolName, {counter_val, Bucket, Key}).
+
 -spec delete(atom(), bucket(), key()) -> ok | {error, term()}.
 delete(PoolName, Bucket, Key) ->
     exec(PoolName, {delete, Bucket, Key}).
-  
+
 -spec delete(atom(), bucket(), key(), timeout() | delete_options()) ->
                     ok | {error, term()}.
 delete(PoolName, Bucket, Key, Timeout) ->
