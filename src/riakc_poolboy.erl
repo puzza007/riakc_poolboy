@@ -293,7 +293,7 @@ exec(PoolName, X) ->
     Name = list_to_binary([<<"riakc_poolboy.">>, PoolNameBin, <<".">> | stat(X)]),
     Fun = fun(Worker) ->
                   Metric = folsom_metrics:histogram_timed_begin(Name),
-                  Res = gen_server:call(Worker, X),
+                  Res = gen_server:call(Worker, X, infinity),
                   ok = histogram_timed_notify(Metric),
                   Res
           end,
