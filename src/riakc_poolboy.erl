@@ -23,6 +23,8 @@
 -export([get_index/5]).
 -export([get_index/6]).
 -export([get_index/7]).
+-export([get_index_range/5]).
+-export([get_index_range/6]).
 -export([get_server_info/1]).
 -export([get_server_info/2]).
 -export([list_buckets/1]).
@@ -282,6 +284,18 @@ get_index(PoolName, Bucket, Index, StartKey, EndKey) ->
                        {ok, index_results()} | {error, term()}.
 get_index(PoolName, Bucket, Index, StartKey, EndKey, Timeout, CallTimeout) ->
     exec(PoolName, {get_index, Bucket, Index, StartKey, EndKey, Timeout, CallTimeout}).
+
+-spec get_index_range(atom(), bucket(), binary() | secondary_index_id(), key() | integer() | list(),
+                      key() | integer() | list()) ->
+                       {ok, index_results()} | {error, term()}.
+get_index_range(PoolName, Bucket, Index, StartKey, EndKey) ->
+    exec(PoolName, {get_index_range, Bucket, Index, StartKey, EndKey}).
+
+-spec get_index_range(atom(), bucket(), binary() | secondary_index_id(), key() | integer() | list(),
+                      key() | integer() | list(), list()) ->
+                       {ok, index_results()} | {error, term()}.
+get_index_range(PoolName, Bucket, Index, StartKey, EndKey, Opts) ->
+    exec(PoolName, {get_index_range, Bucket, Index, StartKey, EndKey, Opts}).
 
 -spec tunnel(atom(), msg_id(), binary(), timeout()) -> {ok, binary()} | {error, term()}.
 tunnel(PoolName, MsgId, Pkt, Timeout) ->
