@@ -2,6 +2,8 @@
 
 -include_lib("riakc/include/riakc.hrl").
 
+-export([counter_incr/4]).
+-export([counter_val/3]).
 -export([delete/3]).
 -export([delete/4]).
 -export([delete/5]).
@@ -21,6 +23,8 @@
 -export([get_index/5]).
 -export([get_index/6]).
 -export([get_index/7]).
+-export([get_index_range/5]).
+-export([get_index_range/6]).
 -export([get_server_info/1]).
 -export([get_server_info/2]).
 -export([list_buckets/1]).
@@ -96,10 +100,18 @@ put(PoolName, Obj, Timeout) ->
 put(PoolName, Obj, Options, Timeout) ->
     exec(PoolName, {put, Obj, Options, Timeout}).
 
+-spec counter_incr(atom(), bucket(), key(), number()) -> ok | {error, term()}.
+counter_incr(PoolName, Bucket, Key, N) ->
+    exec(PoolName, {counter_incr, Bucket, Key, N}).
+
+-spec counter_val(atom(), bucket(), key()) -> ok | {error, term()}.
+counter_val(PoolName, Bucket, Key) ->
+    exec(PoolName, {counter_val, Bucket, Key}).
+
 -spec delete(atom(), bucket(), key()) -> ok | {error, term()}.
 delete(PoolName, Bucket, Key) ->
     exec(PoolName, {delete, Bucket, Key}).
-  
+
 -spec delete(atom(), bucket(), key(), timeout() | delete_options()) ->
                     ok | {error, term()}.
 delete(PoolName, Bucket, Key, Timeout) ->
@@ -273,6 +285,18 @@ get_index(PoolName, Bucket, Index, StartKey, EndKey) ->
 get_index(PoolName, Bucket, Index, StartKey, EndKey, Timeout, CallTimeout) ->
     exec(PoolName, {get_index, Bucket, Index, StartKey, EndKey, Timeout, CallTimeout}).
 
+-spec get_index_range(atom(), bucket(), binary() | secondary_index_id(), key() | integer() | list(),
+                      key() | integer() | list()) ->
+                       {ok, index_results()} | {error, term()}.
+get_index_range(PoolName, Bucket, Index, StartKey, EndKey) ->
+    exec(PoolName, {get_index_range, Bucket, Index, StartKey, EndKey}).
+
+-spec get_index_range(atom(), bucket(), binary() | secondary_index_id(), key() | integer() | list(),
+                      key() | integer() | list(), list()) ->
+                       {ok, index_results()} | {error, term()}.
+get_index_range(PoolName, Bucket, Index, StartKey, EndKey, Opts) ->
+    exec(PoolName, {get_index_range, Bucket, Index, StartKey, EndKey, Opts}).
+
 -spec tunnel(atom(), msg_id(), binary(), timeout()) -> {ok, binary()} | {error, term()}.
 tunnel(PoolName, MsgId, Pkt, Timeout) ->
     exec(PoolName, {tunnel, MsgId, Pkt, Timeout}).
@@ -283,7 +307,7 @@ exec(PoolName, X) ->
     Name = list_to_binary([<<"riakc_poolboy.">>, PoolNameBin, <<".">> | stat(X)]),
     Fun = fun(Worker) ->
                   Metric = folsom_metrics:histogram_timed_begin(Name),
-                  Res = gen_server:call(Worker, X),
+                  Res = gen_server:call(Worker, X, infinity),
                   ok = histogram_timed_notify(Metric),
                   Res
           end,

@@ -8,18 +8,16 @@
 
 -include_lib("common_test/include/ct.hrl").
 
--define(DEPS, [protobuffs, riak_pb, riakc, poolboy, folsom, riakc_poolboy]).
-
 all() ->
     [pool,
      pool_sync_connect].
 
 init_per_suite(Config) ->
-    [application:start(App) || App <- ?DEPS],
+    {ok, _} = application:ensure_all_started(riakc_poolboy),
     Config.
 
 end_per_suite(_Config) ->
-    [application:stop(App) || App <- lists:reverse(?DEPS)].
+    application:stop(riakc_poolboy).
 
 pool(_Config) ->
     SizeArgs = [{size, 10},
