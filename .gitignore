@@ -3,3 +3,4 @@ ebin/*.beam
 deps
 test/*.beam
 logs
+.rebar
