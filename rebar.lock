@@ -1,0 +1,10 @@
+[{<<"bear">>,{pkg,<<"bear">>,<<"0.8.3">>},1},
+ {<<"folsom">>,{pkg,<<"folsom">>,<<"0.8.3">>},0},
+ {<<"goldrush">>,{pkg,<<"goldrush">>,<<"0.1.7">>},1},
+ {<<"hamcrest">>,{pkg,<<"hamcrest">>,<<"0.1.1">>},2},
+ {<<"lager">>,{pkg,<<"lager">>,<<"2.1.1">>},0},
+ {<<"meck">>,{pkg,<<"meck">>,<<"0.8.3">>},3},
+ {<<"poolboy">>,{pkg,<<"poolboy">>,<<"1.5.1">>},0},
+ {<<"protobuffs">>,{pkg,<<"protobuffs">>,<<"0.8.2">>},2},
+ {<<"riak_pb">>,{pkg,<<"riak_pb">>,<<"2.1.0">>},1},
+ {<<"riakc">>,{pkg,<<"riakc">>,<<"2.1.1">>},0}].

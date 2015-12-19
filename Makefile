@@ -1,25 +1,16 @@
 .PHONY: deps test doc
 
-all: deps compile
+all: compile
 
 compile:
-	rebar compile
-
-deps:
-	rebar get-deps
+	./rebar3 compile
 
 clean:
-	rebar clean
-
-distclean: clean 
-	rebar delete-deps
+	./rebar3 clean
 
 test: 
-	rebar skip_deps=true ct
+	./rebar3 ct
+	./rebar3 dialyzer
 
-dialyzer: compile
-	@dialyzer -Wno_undefined_callbacks \
-        -r ebin \
-        -r deps/folsom \
-        -r deps/poolboy \
-        -r deps/riakc
+dialyzer:
+	./rebar3 dialyzer

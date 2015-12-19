@@ -3,3 +3,5 @@ ebin/*.beam
 deps
 test/*.beam
 logs
+_build
+*~

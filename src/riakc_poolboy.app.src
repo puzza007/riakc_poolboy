@@ -2,7 +2,7 @@
 {application, riakc_poolboy,
  [
   {description, "Simple Riak PB connection pool"},
-  {vsn, "1.4.0"},
+  {vsn, "1.4.1"},
   {registered, []},
   {applications, [
                   kernel,
@@ -29,5 +29,7 @@
                  ]},
          {reconnect_retries, 10},
          {reconnect_delay, 450}
-        ]}
+        ]},
+  {maintainers, ["Paul Oliver"]},
+  {links, [{"Github", "https://github.com/puzza007/riakc_poolboy"}]}
  ]}.

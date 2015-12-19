@@ -1,5 +1,7 @@
 # Riak Protocol Buffers Client Pool
 
+[![Hex pm](http://img.shields.io/hexpm/v/riakc_poolboy.svg?style=flat)](https://hex.pm/packages/riakc_poolboy)
+
 About
 =========
 
