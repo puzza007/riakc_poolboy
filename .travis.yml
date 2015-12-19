@@ -1,0 +1,7 @@
+sudo: false
+language: erlang
+otp_release:
+  - 17.5
+services:
+  - riak
+script: make deps compile test
